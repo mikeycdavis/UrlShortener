@@ -11,4 +11,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="urls.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

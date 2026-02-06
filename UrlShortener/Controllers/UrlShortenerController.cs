@@ -1,25 +1,28 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using UrlShortener.Services;
 
 namespace UrlShortener.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UrlShortenerController(ILogger<UrlShortenerController> logger) : ControllerBase
+    public class UrlShortenerController(ILogger<UrlShortenerController> logger, IUrlMappingService urlMappingService) : ControllerBase
     {
-        private readonly ILogger<UrlShortenerController> _logger = logger;
-
-        [HttpPost(Name = "GetShortenedUrl")]
+        [HttpPost]
+        [Route("shorten-url")]
         [AllowAnonymous]
         [SwaggerResponse(200, "Shortened URL from a long URL", typeof(string))]
         public async Task<IActionResult> GetShortenedUrl([FromBody] string url)
         {
-            _logger.LogInformation("Received request to shorten URL: {Url}", url);
+            logger.LogInformation("Received request to shorten URL: {Url}", url);
 
-            var shortenedUrl = url;
+            var shortenedUrl = await urlMappingService.GetShortUrlAsync(url);
 
-            _logger.LogInformation("Shortened URL: {ShortenedUrl}", shortenedUrl);
+            if (string.IsNullOrWhiteSpace(shortenedUrl))
+                return NotFound();
+
+            logger.LogInformation("Shortened URL: {ShortenedUrl}", shortenedUrl);
             return new OkObjectResult(shortenedUrl);
         }
     }
