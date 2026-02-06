@@ -4,7 +4,7 @@ namespace UrlShortener.Services;
 
 public interface IUrlMappingService
 {
-    Task<string?> GetShortUrlAsync(string longUrl);
+    Task<string?> GetUrlAsync(string code);
 }
 
 public class UrlMappingService(IWebHostEnvironment env) : IUrlMappingService
@@ -12,10 +12,10 @@ public class UrlMappingService(IWebHostEnvironment env) : IUrlMappingService
     private readonly ConcurrentDictionary<string, string> _mappings = new(StringComparer.OrdinalIgnoreCase);
     private readonly string _filePath = Path.Combine(env.ContentRootPath, "urls.txt");
 
-    public async Task<string?> GetShortUrlAsync(string longUrl)
+    public async Task<string?> GetUrlAsync(string code)
     {
         await LoadFromFileAsync();
-        return _mappings.GetValueOrDefault(longUrl);
+        return _mappings.GetValueOrDefault(code);
     }
 
     private async Task LoadFromFileAsync()
@@ -34,9 +34,9 @@ public class UrlMappingService(IWebHostEnvironment env) : IUrlMappingService
                 continue;
 
             var longUrl = parts[0];
-            var shortUrl = parts[1];
+            var shortCode = parts[1];
 
-            _mappings[longUrl] = shortUrl;
+            _mappings[shortCode] = longUrl;
         }
     }
 }

@@ -6,24 +6,23 @@ using UrlShortener.Services;
 namespace UrlShortener.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class UrlShortenerController(ILogger<UrlShortenerController> logger, IUrlMappingService urlMappingService) : ControllerBase
     {
-        [HttpPost]
-        [Route("shorten-url")]
+        [HttpGet]
+        [Route("redirect")]
         [AllowAnonymous]
-        [SwaggerResponse(200, "Shortened URL from a long URL", typeof(string))]
-        public async Task<IActionResult> GetShortenedUrl([FromBody] string url)
+        [SwaggerResponse(200, "Redirects to a url based on a short url", typeof(string))]
+        public async Task<IActionResult> RedirectToUrl(string code)
         {
-            logger.LogInformation("Received request to shorten URL: {Url}", url);
+            logger.LogInformation($"Received request to for a URL with code: {code}");
 
-            var shortenedUrl = await urlMappingService.GetShortUrlAsync(url);
+            var longUrl = await urlMappingService.GetUrlAsync(code);
 
-            if (string.IsNullOrWhiteSpace(shortenedUrl))
+            if (string.IsNullOrWhiteSpace(longUrl))
                 return NotFound();
 
-            logger.LogInformation("Shortened URL: {ShortenedUrl}", shortenedUrl);
-            return new OkObjectResult(shortenedUrl);
+            logger.LogInformation($"URL: {longUrl}");
+            return Redirect(longUrl);
         }
     }
 }
