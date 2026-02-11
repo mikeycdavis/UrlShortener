@@ -12,11 +12,11 @@ namespace UrlShortener.Controllers
         [Route("redirect")]
         [AllowAnonymous]
         [SwaggerResponse(200, "Redirects to a url based on a short url", typeof(string))]
-        public async Task<IActionResult> RedirectToUrl(string code)
+        public IActionResult RedirectToUrl(string code)
         {
             logger.LogInformation($"Received request to for a URL with code: {code}");
 
-            var longUrl = await urlMappingService.GetUrlAsync(code);
+            var longUrl = urlMappingService.GetUrl(code);
 
             if (string.IsNullOrWhiteSpace(longUrl))
                 return NotFound();

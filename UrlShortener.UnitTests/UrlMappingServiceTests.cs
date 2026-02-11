@@ -30,7 +30,7 @@ public class UrlMappingServiceTests : IDisposable
         var service = new UrlMappingService(_envMock.Object);
 
         // Act
-        var result = await service.GetUrlAsync("abc");
+        var result = service.GetUrl("abc");
 
         // Assert
         Assert.Equal("https://example.com/long/url", result);
@@ -45,7 +45,7 @@ public class UrlMappingServiceTests : IDisposable
         var service = new UrlMappingService(_envMock.Object);
 
         // Act
-        var result = await service.GetUrlAsync("abc");
+        var result = service.GetUrl("abc");
 
         // Assert
         Assert.Equal("https://example.com/long/url", result);
@@ -60,7 +60,7 @@ public class UrlMappingServiceTests : IDisposable
         var service = new UrlMappingService(_envMock.Object);
 
         // Act
-        var result = await service.GetUrlAsync("missing");
+        var result = service.GetUrl("missing");
 
         // Assert
         Assert.Null(result);
@@ -81,29 +81,26 @@ public class UrlMappingServiceTests : IDisposable
         var service = new UrlMappingService(_envMock.Object);
 
         // Act
-        var result = await service.GetUrlAsync("abc");
+        var result = service.GetUrl("abc");
 
         // Assert
         Assert.Equal("https://example.com/valid", result);
     }
 
     [Fact]
-    public async Task GetUrlAsync_Throws_WhenFileDoesNotExist()
+    public void GetUrlAsync_Throws_WhenFileDoesNotExist()
     {
         // Arrange
         var service = new UrlMappingService(_envMock.Object);
 
         // Act & Assert
-        await Assert.ThrowsAsync<FileNotFoundException>(() =>
-            service.GetUrlAsync("abc"));
+        Assert.Throws<FileNotFoundException>(() => service.GetUrl("abc"));
     }
 
     public void Dispose()
     {
         if (Directory.Exists(_tempDirectory))
-        {
             Directory.Delete(_tempDirectory, recursive: true);
-        }
 
         GC.SuppressFinalize(this);
     }

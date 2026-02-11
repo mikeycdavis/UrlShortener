@@ -4,26 +4,30 @@ namespace UrlShortener.Services;
 
 public interface IUrlMappingService
 {
-    Task<string?> GetUrlAsync(string code);
+    string? GetUrl(string code);
 }
 
-public class UrlMappingService(IWebHostEnvironment env) : IUrlMappingService
+public class UrlMappingService : IUrlMappingService
 {
-    private readonly ConcurrentDictionary<string, string> _mappings = new(StringComparer.OrdinalIgnoreCase);
-    private readonly string _filePath = Path.Combine(env.ContentRootPath, "urls.txt");
+    private readonly ConcurrentDictionary<string, string> _mappings;
+    private readonly string _filePath;
 
-    public async Task<string?> GetUrlAsync(string code)
+    public UrlMappingService(IWebHostEnvironment env)
     {
-        await LoadFromFileAsync();
-        return _mappings.GetValueOrDefault(code);
+        _filePath = Path.Combine(env.ContentRootPath, "urls.txt");
+        _mappings = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        LoadFromFile();
     }
 
-    private async Task LoadFromFileAsync()
+    public string? GetUrl(string code)
+        => _mappings.GetValueOrDefault(code);
+
+    private void LoadFromFile()
     {
         if (!File.Exists(_filePath))
             throw new FileNotFoundException($"Mapping file not found: {_filePath}");
 
-        foreach (var line in await File.ReadAllLinesAsync(_filePath))
+        foreach (var line in File.ReadAllLines(_filePath))
         {
             if (string.IsNullOrWhiteSpace(line))
                 continue;
