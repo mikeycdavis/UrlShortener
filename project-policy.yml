@@ -1,0 +1,5 @@
+standardVersion: 1.0.0
+project: UrlShortener
+
+ui:
+  applicability: no-ui

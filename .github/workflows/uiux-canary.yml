@@ -1,0 +1,17 @@
+# Canary: prove the version-identity guard refuses a development-SHA execution
+# of a policy that pins standardVersion 1.0.0. A RED check is the EXPECTED result.
+name: uiux-canary
+
+on:
+  push:
+    branches:
+      - canary/uiux-13a
+
+permissions:
+  contents: read
+
+jobs:
+  standards:
+    uses: mikeycdavis/UIUXDesignStandards/.github/workflows/validate.yml@19b13fec9f8b8a088a6bc0ae57c30d1b0520727d
+    with:
+      standards-ref: 19b13fec9f8b8a088a6bc0ae57c30d1b0520727d
